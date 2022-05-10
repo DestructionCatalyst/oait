@@ -42,15 +42,15 @@ WITH selected_tools AS (
         AVG(Review.rating) >= 3
 )
 SELECT
-	name,
+    name,
     price,
     avg_rating,
     platforms
 FROM 
-	selected_tools 
+    selected_tools 
     JOIN CASE_tool ON selected_tools.case_tool_id = CASE_tool.case_tool_id
 ORDER BY
-	price
+    price
 	
 
 /*    • Провести сравнение двух средств: вывести функции, которыми обладает одна, но не обладает другая, а также разницу в цене. */
