@@ -158,7 +158,7 @@ WITH user_review_counts AS (
         JOIN CASE_tool USING(case_tool_id)
         JOIN Type USING(type_id)
     WHERE
-        MyUser.username = 'danilakomissarov'
+        MyUser.username = ' iulii49'
     GROUP BY
         type_id
 )
