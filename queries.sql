@@ -12,33 +12,45 @@ WHERE
 	Country.name = 'Российская Федерация'
 	AND Type.name = 'Средство анализа'
 GROUP BY
-	CASE_tool.case_tool_id
+	CASE_tool.name
 ORDER BY
 	AVG(Review.rating) DESC
 	
 /*    • Найти все CASE-средства, работающие на Mac или Windows, обладающие определенной функцией и имеющие рейтинг не ниже 3. Отсортируйте по цене.*/
-SELECT 
-	CASE_tool.name, 
-	AVG(Review.rating), 
-	GROUP_CONCAT(Platform.name)
-FROM
-	CASE_tool
-	JOIN Review ON CASE_tool.case_tool_id = Review.case_tool_id
-	JOIN CASE_tools_features ON CASE_tool.case_tool_id = CASE_tools_features.case_tool_id
-	JOIN Feature ON Feature.feature_id = CASE_tools_features.feature_id
-	JOIN CASE_tools_platforms ON CASE_tool.case_tool_id = CASE_tools_platforms.case_tool_id
-	JOIN Platform ON Platform.platform_id = CASE_tools_platforms.platform_id
-WHERE
-	Feature.name = 'economy-value'
-	AND (
-    	Platform.name = 'Windows'
-        OR
-        Platform.name = 'Mac OS'
-    )
-GROUP BY
-	CASE_tool.case_tool_id
-HAVING
-	AVG(Review.rating) >= 3
+WITH selected_tools AS (
+    SELECT 
+        CASE_tool.case_tool_id, 
+        AVG(Review.rating) AS avg_rating, 
+        GROUP_CONCAT(DISTINCT Platform.name) AS platforms
+    FROM
+        CASE_tool
+        JOIN Review ON CASE_tool.case_tool_id = Review.case_tool_id
+        JOIN CASE_tools_features ON CASE_tool.case_tool_id = CASE_tools_features.case_tool_id
+        JOIN Feature ON Feature.feature_id = CASE_tools_features.feature_id
+        JOIN CASE_tools_platforms ON CASE_tool.case_tool_id = CASE_tools_platforms.case_tool_id
+        JOIN Platform ON Platform.platform_id = CASE_tools_platforms.platform_id
+    WHERE
+        Feature.name = 'economy-value'
+        AND (
+            Platform.name = 'Windows'
+            OR
+            Platform.name = 'Mac OS'
+        )
+    GROUP BY
+        CASE_tool.case_tool_id
+    HAVING
+        AVG(Review.rating) >= 3
+)
+SELECT
+	name,
+    price,
+    avg_rating,
+    platforms
+FROM 
+	selected_tools 
+    JOIN CASE_tool ON selected_tools.case_tool_id = CASE_tool.case_tool_id
+ORDER BY
+	price
 	
 
 /*    • Провести сравнение двух средств: вывести функции, которыми обладает одна, но не обладает другая, а также разницу в цене. */
