@@ -1,0 +1,17 @@
+version: '3.3'
+
+services:
+  database-filling:
+    build: .
+    env_file:
+      - ./.env
+    volumes:
+      - ./src:/src
+    command: python3 /src/start.py
+    
+networks:
+  default:
+    external:
+      name: oait_default
+
+

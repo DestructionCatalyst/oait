@@ -1,0 +1,6 @@
+pymysql
+cryptography
+Faker
+faker-microservice
+requests
+
